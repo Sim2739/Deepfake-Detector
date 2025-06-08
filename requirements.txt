@@ -1,0 +1,14 @@
+flask
+numpy
+pandas
+matplotlib
+scikit-learn
+imbalanced-learn
+accelerate
+evaluate
+datasets
+transformers
+torch
+torchvision
+Pillow
+tqdm
