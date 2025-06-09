@@ -1,6 +1,6 @@
 # Deepfake Detection Project
 
-This project is a deepfake image detection tool that uses a pretrained model to classify real vs. AI-generated images. The model weights are hosted externally due to file size and are downloaded automatically.
+This project is a deepfake image detection tool that uses a pretrained model to classify real vs. AI-generated images. The model weights are hosted externally due to file size and can be downloaded using the script provided in the download_model file.
 
 
 
