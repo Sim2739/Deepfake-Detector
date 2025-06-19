@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Deepfake Image Detector</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    input[type="file"] {
+      margin-bottom: 10px;
+    }
+
+    button {
+      background: #007BFF;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+
+    #image-preview {
+      max-width: 300px;
+      margin-top: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Deepfake Image Detector</h1>
+
+  <form id="upload-form">
+    <input type="file" id="image" accept="image/*" required />
+    <br />
+    <button type="submit">Predict</button>
+  </form>
+
+  <img id="image-preview" src="#" alt="Image preview" />
+
+  <div id="result"></div>
+
+  <script>
+    const form = document.getElementById('upload-form');
+    const imageInput = document.getElementById('image');
+    const imagePreview = document.getElementById('image-preview');
+    const resultDiv = document.getElementById('result');
+
+    imageInput.onchange = event => {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          imagePreview.src = e.target.result;
+          imagePreview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+
+    form.onsubmit = async e => {
+      e.preventDefault();
+
+      const file = imageInput.files[0];
+      if (!file) return;
+
+      const formData = new FormData();
+      formData.append('image', file);
+
+      resultDiv.textContent = 'Processing...';
+
+      try {
+        const response = await fetch('/predict', {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          resultDiv.innerHTML = `
+            <strong>Prediction:</strong> ${data.prediction} <br/>
+            <strong>Confidence:</strong> ${(data.confidence * 100).toFixed(2)}%
+          `;
+        } else {
+          resultDiv.textContent = 'Error: ' + (data.error || 'Unknown error');
+        }
+      } catch (err) {
+        resultDiv.textContent = 'Request failed: ' + err.message;
+      }
+    };
+  </script>
+</body>
+</html>
